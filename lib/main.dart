@@ -1,111 +1,387 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(CalculadoraFinanciera());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class CalculadoraFinanciera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Calculadora Financiera',
       theme: ThemeData(
-      
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.indigo,
+        brightness: Brightness.light,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: MenuPrincipal(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class MenuPrincipal extends StatelessWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Calculadora Financiera'),
+        centerTitle: true,
+        elevation: 2.0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: <Widget>[
+            MenuCard(
+              title: 'Interés Simple',
+              icon: Icons.attach_money,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => InteresSimplePage()),
+                );
+              },
+            ),
+            MenuCard(
+              title: 'Interés Compuesto',
+              icon: Icons.trending_up,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => InteresCompuestoPage()),
+                );
+              },
+            ),
+            MenuCard(
+              title: 'Gradiente Aritmético',
+              icon: Icons.bar_chart,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GradienteAritmeticoPage()),
+                );
+              },
+            ),
+            MenuCard(
+              title: 'Gradiente Geométrico',
+              icon: Icons.show_chart,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GradienteGeometricoPage()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class MenuCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
 
-  void _incrementCounter() {
+  MenuCard({required this.title, required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 4,
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: ListTile(
+        contentPadding: EdgeInsets.all(20),
+        leading: Icon(icon, size: 40, color: Colors.indigo),
+        title: Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.indigo),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+class InteresSimplePage extends StatefulWidget {
+  @override
+  _InteresSimplePageState createState() => _InteresSimplePageState();
+}
+
+class _InteresSimplePageState extends State<InteresSimplePage> {
+  final _principalController = TextEditingController();
+  final _tasaInteresController = TextEditingController();
+  final _tiempoController = TextEditingController();
+
+  double _resultado = 0.0;
+
+  void _calcularInteresSimple() {
+    double principal = double.tryParse(_principalController.text) ?? 0.0;
+    double tasaInteres = double.tryParse(_tasaInteresController.text) ?? 0.0;
+    double tiempo = double.tryParse(_tiempoController.text) ?? 0.0;
+
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _resultado = principal * tasaInteres * tiempo;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Interés Simple'),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            TextField(
+              controller: _principalController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Principal',
+                border: OutlineInputBorder(),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            SizedBox(height: 10),
+            TextField(
+              controller: _tasaInteresController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Tasa de Interés',
+                border: OutlineInputBorder(),
+              ),
             ),
+            SizedBox(height: 10),
+            TextField(
+              controller: _tiempoController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Tiempo',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _calcularInteresSimple,
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                textStyle: TextStyle(fontSize: 16),
+              ),
+              child: Text('Calcular'),
+            ),
+            SizedBox(height: 20),
+            Text('Resultado: \$${_resultado.toStringAsFixed(2)}', style: TextStyle(fontSize: 18)),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class InteresCompuestoPage extends StatefulWidget {
+  @override
+  _InteresCompuestoPageState createState() => _InteresCompuestoPageState();
+}
+
+class _InteresCompuestoPageState extends State<InteresCompuestoPage> {
+  final _principalController = TextEditingController();
+  final _tasaInteresController = TextEditingController();
+  final _tiempoController = TextEditingController();
+  final _capitalizacionesController = TextEditingController();
+
+  double _resultado = 0.0;
+
+  void _calcularInteresCompuesto() {
+    double principal = double.tryParse(_principalController.text) ?? 0.0;
+    double tasaInteres = double.tryParse(_tasaInteresController.text) ?? 0.0;
+    double tiempo = double.tryParse(_tiempoController.text) ?? 0.0;
+    int capitalizaciones = int.tryParse(_capitalizacionesController.text) ?? 1;
+
+    setState(() {
+      _resultado = principal * (pow(1 + (tasaInteres / capitalizaciones), capitalizaciones * tiempo)) - principal;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Interés Compuesto'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: _principalController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Principal'),
+            ),
+            TextField(
+              controller: _tasaInteresController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Tasa de Interés'),
+            ),
+            TextField(
+              controller: _tiempoController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Tiempo (años)'),
+            ),
+            TextField(
+              controller: _capitalizacionesController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Capitalizaciones por Año'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _calcularInteresCompuesto,
+              child: Text('Calcular'),
+            ),
+            SizedBox(height: 20),
+            Text('Resultado: \$${_resultado.toStringAsFixed(2)}'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GradienteAritmeticoPage extends StatefulWidget {
+  @override
+  _GradienteAritmeticoPageState createState() => _GradienteAritmeticoPageState();
+}
+
+class _GradienteAritmeticoPageState extends State<GradienteAritmeticoPage> {
+  final _gradienteController = TextEditingController();
+  final _tasaInteresController = TextEditingController();
+  final _periodosController = TextEditingController();
+
+  double _resultado = 0.0;
+
+  void _calcularGradienteAritmetico() {
+    double gradiente = double.tryParse(_gradienteController.text) ?? 0.0;
+    double tasaInteres = double.tryParse(_tasaInteresController.text) ?? 0.0;
+    int periodos = int.tryParse(_periodosController.text) ?? 0;
+
+    setState(() {
+      _resultado = gradiente * ((pow(1 + tasaInteres, periodos) - 1) / pow(tasaInteres, 2) - periodos / tasaInteres);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Gradiente Aritmético'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: _gradienteController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Gradiente'),
+            ),
+            TextField(
+              controller: _tasaInteresController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Tasa de Interés'),
+            ),
+            TextField(
+              controller: _periodosController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Número de Períodos'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _calcularGradienteAritmetico,
+              child: Text('Calcular'),
+            ),
+            SizedBox(height: 20),
+            Text('Resultado: \$${_resultado.toStringAsFixed(2)}'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GradienteGeometricoPage extends StatefulWidget {
+  @override
+  _GradienteGeometricoPageState createState() => _GradienteGeometricoPageState();
+}
+
+class _GradienteGeometricoPageState extends State<GradienteGeometricoPage> {
+  final _primerPagoController = TextEditingController();
+  final _tasaInteresController = TextEditingController();
+  final _tasaCrecimientoController = TextEditingController();
+  final _periodosController = TextEditingController();
+
+  double _resultado = 0.0;
+
+  void _calcularGradienteGeometrico() {
+    double primerPago = double.tryParse(_primerPagoController.text) ?? 0.0;
+    double tasaInteres = double.tryParse(_tasaInteresController.text) ?? 0.0;
+    double tasaCrecimiento = double.tryParse(_tasaCrecimientoController.text) ?? 0.0;
+    int periodos = int.tryParse(_periodosController.text) ?? 0;
+
+    if (tasaInteres == tasaCrecimiento) {
+      setState(() {
+        _resultado = primerPago * periodos / (1 + tasaInteres);
+      });
+    } else {
+      setState(() {
+        _resultado = (primerPago / (tasaInteres - tasaCrecimiento)) * 
+                     (1 - pow((1 + tasaCrecimiento) / (1 + tasaInteres), periodos));
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Gradiente Geométrico'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: _primerPagoController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Primer Pago'),
+            ),
+            TextField(
+              controller: _tasaInteresController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Tasa de Interés'),
+            ),
+            TextField(
+              controller: _tasaCrecimientoController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Tasa de Crecimiento'),
+            ),
+            TextField(
+              controller: _periodosController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Número de Períodos'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _calcularGradienteGeometrico,
+              child: Text('Calcular'),
+            ),
+            SizedBox(height: 20),
+            Text('Resultado: \$${_resultado.toStringAsFixed(2)}'),
+          ],
+        ),
+      ),
     );
   }
 }
